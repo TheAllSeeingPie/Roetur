@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -9,8 +11,8 @@ namespace Roetur.Core
 {
     public static class Roetur
     {
-        internal static readonly ConcurrentDictionary<Regex, Func<RoetContext, Task>> Routes = new ConcurrentDictionary<Regex, Func<RoetContext, Task>>();
-        internal static readonly Regex RouteValidator = new Regex(@"(/:?[\w-]+)+", RegexOptions.Compiled);
+        internal static IEnumerable<Tuple<Regex, Func<RoetContext, Task>>> Routes = new List<Tuple<Regex, Func<RoetContext, Task>>>();
+        internal static readonly Regex RouteValidator = new Regex(@"^/$|(/:?[\w-]+)", RegexOptions.Compiled);
         internal static readonly Regex Tokeniser = new Regex(@"(:[\w]+)", RegexOptions.Compiled); 
 
         public static void Add(string route, Func<RoetContext, Task> action)
@@ -41,20 +43,22 @@ namespace Roetur.Core
             {
                 regex = new Regex(route, RegexOptions.Compiled);
             }
-            Routes.AddOrUpdate(regex, r => action, (r, f) => f);
+
+            Routes = new List<Tuple<Regex, Func<RoetContext, Task>>>(Routes)
+            {
+                new Tuple<Regex, Func<RoetContext, Task>>(regex, action)
+            }.OrderByDescending(t=> t.Item1.ToString()).ToArray();
         }
 
         public static Task Invoke(IOwinContext context)
         {
             var absolutePath = context.Request.Uri.AbsolutePath;
-            Func<RoetContext, Task> action;
+            var match = Routes.FirstOrDefault(t => t.Item1.IsMatch(absolutePath));
 
-            var match = Routes.Keys.OrderByDescending(k => k.ToString()).FirstOrDefault(k => k.IsMatch(absolutePath));
+            if (match == null ) return context.Error500("No route found");
 
-            if (match == null || !Routes.TryGetValue(match, out action)) return context.Error500("No route found");
-
-            var roetContext = new RoetContext(context, match);
-            return action.Invoke(roetContext);
+            var roetContext = new RoetContext(context, match.Item1);
+            return match.Item2.Invoke(roetContext);
         }
     }
 }

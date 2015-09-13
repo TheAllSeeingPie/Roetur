@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.Owin.Fakes;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -11,7 +13,7 @@ namespace Roetur.Core.Tests
         [TestInitialize]
         public void Initialise()
         {
-            Roetur.Routes.Clear();
+            Roetur.Routes = new List<Tuple<Regex, Func<RoetContext, Task>>>();
         }
 
         [TestMethod]
