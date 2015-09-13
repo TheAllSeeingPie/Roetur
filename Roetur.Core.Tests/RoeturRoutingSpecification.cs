@@ -18,7 +18,7 @@ namespace Roetur.Core.Tests
         public async Task Simple_routes_are_routed()
         {
             var success = false;
-            Roetur.AddRoet("/", c => Task.Factory.StartNew(() => { success = true; }));
+            Roetur.Add("/", c => Task.Factory.StartNew(() => { success = true; }));
             var stubIOwinRequest = new StubIOwinRequest
             {
                 UriGet = () => new Uri("http://localhost/")
@@ -37,7 +37,7 @@ namespace Roetur.Core.Tests
         public async Task Complex_routes_with_ints_are_routed()
         {
             var success = false;
-            Roetur.AddRoet("/:id", c => Task.Factory.StartNew(() =>
+            Roetur.Add("/:id", c => Task.Factory.StartNew(() =>
             {
                 Assert.AreEqual(1, c.Param<int>(":id"));
                 success = true;
@@ -61,7 +61,7 @@ namespace Roetur.Core.Tests
         {
             var guid = Guid.NewGuid();
             var success = false;
-            Roetur.AddRoet("/:id/:someguid", c => Task.Factory.StartNew(() =>
+            Roetur.Add("/:id/:someguid", c => Task.Factory.StartNew(() =>
             {
                 Assert.AreEqual(1, c.Param<int>(":id"));
                 Assert.AreEqual(guid, c.Param<Guid>(":someguid"));
@@ -70,6 +70,30 @@ namespace Roetur.Core.Tests
             var stubIOwinRequest = new StubIOwinRequest
             {
                 UriGet = () => new Uri($"http://localhost/1/{guid}")
+            };
+            var context = new StubIOwinContext
+            {
+                RequestGet = () => stubIOwinRequest
+            };
+
+            await Roetur.Invoke(context);
+
+            Assert.IsTrue(success);
+        }
+
+        [TestMethod]
+        public async Task Routes_are_executed_in_correct_order()
+        {
+            var success = false;
+            Roetur.Add("/", c=> Task.Factory.StartNew(()=> Assert.Fail()));
+            Roetur.Add("/:id", c => Task.Factory.StartNew(() =>
+            {
+                Assert.AreEqual(1, c.Param<int>(":id"));
+                success = true;
+            }));
+            var stubIOwinRequest = new StubIOwinRequest
+            {
+                UriGet = () => new Uri("http://localhost/1")
             };
             var context = new StubIOwinContext
             {

@@ -16,14 +16,14 @@ namespace Roetur.Core.Tests
         [TestMethod]
         public void Simple_routes_are_added_to_collection()
         {
-            Roetur.AddRoet("/", context => Task.Factory.StartNew(()=> {}));
+            Roetur.Add("/", context => Task.Factory.StartNew(()=> {}));
             Assert.AreEqual(1, Roetur.Routes.Count);
         }
 
         [TestMethod]
         public void Complex_routes_are_added_to_collection()
         {
-            Roetur.AddRoet("/awdawdad/:id", context => Task.Factory.StartNew(id => { }, context.Param<int>(":id")));
+            Roetur.Add("/awdawdad/:id", context => Task.Factory.StartNew(id => { }, context.Param<int>(":id")));
             Assert.AreEqual(1, Roetur.Routes.Count);
         }
     }

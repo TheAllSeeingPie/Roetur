@@ -18,9 +18,9 @@ namespace TestService
 
         protected override async Task RunAsync(CancellationToken cancellationToken)
         {
-            Roetur.Core.Roetur.AddRoet("/", context => context.Ok(() => HelloWorld.SayHello()));
-            Roetur.Core.Roetur.AddRoet("/exception", context => { throw new Exception(); });
-            Roetur.Core.Roetur.AddRoet("/:id", context => context.Ok(()=> context.Param<int>(":id")));
+            Roetur.Core.Roetur.Add("/", context => context.Ok(() => HelloWorld.SayHello()));
+            Roetur.Core.Roetur.Add("/exception", context => { throw new Exception(); });
+            Roetur.Core.Roetur.Add("/:id", context => context.Ok(()=> context.Param<int>(":id")));
 
             int iterations = 0;
             using (WebApp.Start<Startup>("http://localhost:8002"))
