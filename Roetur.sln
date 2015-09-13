@@ -11,6 +11,13 @@ Project("{A07B5EB6-E848-4116-A8D0-A826331D98C6}") = "TestApplication", "TestAppl
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestService", "TestService\TestService.csproj", "{24091614-3BA7-40E0-92C1-3DCAB4BBAC97}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{3BDB19F1-5C5E-4BD2-89F6-F733BA21F171}"
+	ProjectSection(SolutionItems) = preProject
+		README.md = README.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Azure", "Azure", "{1A6B36D0-82EF-4792-ADB7-677BCDF0C7AE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -54,5 +61,8 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{3EBC578E-7897-4724-95EB-EAA00D71866E} = {1A6B36D0-82EF-4792-ADB7-677BCDF0C7AE}
 	EndGlobalSection
 EndGlobal

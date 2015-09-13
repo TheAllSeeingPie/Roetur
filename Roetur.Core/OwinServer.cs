@@ -5,14 +5,13 @@ namespace Roetur.Core
 {
     public class OwinServer : OwinMiddleware
     {
-        public OwinServer(OwinMiddleware next)
-            : base(next)
+        public OwinServer(OwinMiddleware next) : base(next)
         {
         }
 
         public override Task Invoke(IOwinContext context)
         {
-            return Route.Invoke(context);
+            return Roetur.Invoke(context);
         }
     }
 }

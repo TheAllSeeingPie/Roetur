@@ -5,7 +5,7 @@ using ServiceStack.Text;
 
 namespace Roetur.Core
 {
-    public static class IOwinContextExtensions
+    public static class IOwinContextOutputExtensions
     {
         public static Task Ok(this IOwinContext context)
         {
