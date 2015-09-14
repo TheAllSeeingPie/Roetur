@@ -2,6 +2,10 @@
 
 A lightwieight OWIN-based API framework. There are no sub-classes needed to process a Uri, instead there is a Router (Roetur) which you can register actions for Uri's with. Here's an example from the self-hosted TestService:
 
+```PowerShell
+PM> Install-Package Roetur
+```
+
 ```C#
 protected override async Task RunAsync(CancellationToken cancellationToken)
 {
