@@ -23,7 +23,8 @@ namespace Roetur.Core.Tests
             Roetur.Add("/", c => Task.Factory.StartNew(() => { success = true; }));
             var stubIOwinRequest = new StubIOwinRequest
             {
-                UriGet = () => new Uri("http://localhost/")
+                UriGet = () => new Uri("http://localhost/"),
+                MethodGet = () => "GET"
             };
             var context = new StubIOwinContext
             {
@@ -46,7 +47,8 @@ namespace Roetur.Core.Tests
             }));
             var stubIOwinRequest = new StubIOwinRequest
             {
-                UriGet = () => new Uri("http://localhost/1")
+                UriGet = () => new Uri("http://localhost/1"),
+                MethodGet = () => "GET"
             };
             var context = new StubIOwinContext
             {
@@ -71,7 +73,8 @@ namespace Roetur.Core.Tests
             }));
             var stubIOwinRequest = new StubIOwinRequest
             {
-                UriGet = () => new Uri($"http://localhost/1/{guid}")
+                UriGet = () => new Uri($"http://localhost/1/{guid}"),
+                MethodGet = () => "GET"
             };
             var context = new StubIOwinContext
             {
@@ -95,7 +98,8 @@ namespace Roetur.Core.Tests
             }));
             var stubIOwinRequest = new StubIOwinRequest
             {
-                UriGet = () => new Uri("http://localhost/1")
+                UriGet = () => new Uri("http://localhost/1"),
+                MethodGet = () => "GET"
             };
             var context = new StubIOwinContext
             {

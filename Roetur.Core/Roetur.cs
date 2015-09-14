@@ -57,7 +57,7 @@ namespace Roetur.Core
             Routes = new List<Tuple<RoetingRule, Func<RoetContext, Task>>>(Routes)
             {
                 new Tuple<RoetingRule, Func<RoetContext, Task>>(new RoetingRule(regex, verb), action)
-            }.OrderByDescending(t=> t.Item1.ToString()).ToArray();
+            }.OrderByDescending(t=> t.Item1.Regex.ToString()).ToArray();
         }
 
         public static Task Invoke(IOwinContext context)
