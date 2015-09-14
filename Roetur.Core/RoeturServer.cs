@@ -3,9 +3,9 @@ using Microsoft.Owin;
 
 namespace Roetur.Core
 {
-    public class OwinServer : OwinMiddleware
+    public class RoeturServer : OwinMiddleware
     {
-        public OwinServer(OwinMiddleware next) : base(next)
+        public RoeturServer(OwinMiddleware next) : base(next)
         {
         }
 

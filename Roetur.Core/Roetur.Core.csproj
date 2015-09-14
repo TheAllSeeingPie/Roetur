@@ -57,10 +57,9 @@
     <Compile Include="RoetContext.cs" />
     <Compile Include="RoetContextInputExtensions.cs" />
     <Compile Include="Roetur.cs" />
-    <Compile Include="OwinServer.cs" />
+    <Compile Include="RoeturServer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RoeturContextExtensions.cs" />
-    <Compile Include="Startup.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

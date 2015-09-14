@@ -9,6 +9,7 @@ namespace Roetur.Core
     {
         internal IOwinContext OwinContext { get; private set; }
         internal IReadOnlyDictionary<string, string> Params { get; private set; }
+        internal string Method { get; set; }
 
         public RoetContext(IOwinContext owinContext, Regex regex)
         {

@@ -13,7 +13,7 @@ namespace Roetur.Core.Tests
         [TestInitialize]
         public void Initialise()
         {
-            Roetur.Routes = new List<Tuple<Regex, Func<RoetContext, Task>>>();
+            Roetur.Routes = new List<Tuple<RoetingRule, Func<RoetContext, Task>>>();
         }
 
         [TestMethod]

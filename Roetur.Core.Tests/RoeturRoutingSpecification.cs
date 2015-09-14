@@ -13,7 +13,7 @@ namespace Roetur.Core.Tests
         [TestInitialize]
         public void Initialise()
         {
-            Roetur.Routes = new List<Tuple<Regex, Func<RoetContext, Task>>>();
+            Roetur.Routes = new List<Tuple<RoetingRule, Func<RoetContext, Task>>>();
         }
 
         [TestMethod]
@@ -96,6 +96,27 @@ namespace Roetur.Core.Tests
             var stubIOwinRequest = new StubIOwinRequest
             {
                 UriGet = () => new Uri("http://localhost/1")
+            };
+            var context = new StubIOwinContext
+            {
+                RequestGet = () => stubIOwinRequest
+            };
+
+            await Roetur.Invoke(context);
+
+            Assert.IsTrue(success);
+        }
+
+        [TestMethod]
+        public async Task Route_verb_is_honoured()
+        {
+            var success = false;
+            Roetur.Add("/", c => Task.Factory.StartNew(() => Assert.Fail()));
+            Roetur.Add("/", c => Task.Factory.StartNew(() => { success = true; }), "POST");
+            var stubIOwinRequest = new StubIOwinRequest
+            {
+                UriGet = () => new Uri("http://localhost/"),
+                MethodGet = () => "POST"
             };
             var context = new StubIOwinContext
             {

@@ -1,12 +1,13 @@
 ﻿using Owin;
+using Roetur.Core;
 
-namespace Roetur.Core
+namespace TestService
 {
     public class Startup
     {
         public void Configuration(IAppBuilder appBuilder)
         {
-            appBuilder.Use<OwinServer>();
+            appBuilder.Use<RoeturServer>();
         }
     }
 }
