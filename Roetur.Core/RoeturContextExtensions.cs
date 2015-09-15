@@ -6,6 +6,11 @@ namespace Roetur.Core
 {
     public static class RoeturContextExtensions
     {
+        public static Task Ok(this RoeturContext context)
+        {
+            return context.OwinContext.Ok();
+        }
+
         public static Task Ok<TIn>(this RoeturContext context, Func<TIn> item)
         {
             return context.OwinContext.Ok(item);

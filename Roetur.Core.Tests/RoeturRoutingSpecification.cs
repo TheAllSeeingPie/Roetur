@@ -2,7 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Microsoft.Owin;
 using Microsoft.Owin.Fakes;
+using Microsoft.QualityTools.Testing.Fakes.Stubs;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Roetur.Core.Tests
@@ -34,6 +36,31 @@ namespace Roetur.Core.Tests
             await Roetur.Invoke(context);
 
             Assert.IsTrue(success);
+        }
+
+        [TestMethod]
+        public async Task Thrown_exceptions_are_caught()
+        {
+            Roetur.Add("/", c => { throw new Exception(); });
+            var owinResponse = new StubIOwinResponse
+            {
+                InstanceBehavior = StubBehaviors.Current,
+                WriteAsyncString = s => Task.Factory.StartNew(()=> {})
+            };
+            var stubIOwinRequest = new StubIOwinRequest
+            {
+                UriGet = () => new Uri("http://localhost/"),
+                MethodGet = () => "GET"
+            };
+            var context = new StubIOwinContext
+            {
+                RequestGet = () => stubIOwinRequest,
+                ResponseGet = () => owinResponse
+            };
+
+            await Roetur.Invoke(context);
+
+            Assert.AreEqual(500, ((IOwinContext) context).Response.StatusCode);
         }
 
         [TestMethod]

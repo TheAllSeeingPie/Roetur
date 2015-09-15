@@ -78,7 +78,8 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Compile Include="RoetContextExtensionSpecifications.cs" />
+    <Compile Include="IOwinContextOutputExtensions.cs" />
+    <Compile Include="RoeturContextExtensionSpecifications.cs" />
     <Compile Include="RoeturRoutingSpecification.cs" />
     <Compile Include="RoeturCollectionSpecification.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
