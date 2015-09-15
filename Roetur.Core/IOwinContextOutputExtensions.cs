@@ -32,8 +32,7 @@ namespace Roetur.Core
 
         public static Task Error500(this IOwinContext context, string message)
         {
-            var error = JsonSerializer.SerializeToString(message);
-            return context.Write(error, 500);
+            return context.Write(JsonSerializer.SerializeToString(message), 500);
         }
 
         private static Task Write(this IOwinContext context, string message, int statusCode)

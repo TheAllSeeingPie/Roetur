@@ -54,7 +54,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="IOwinContextOutputExtensions.cs" />
-    <Compile Include="RoetContext.cs" />
+    <Compile Include="RoeturContext.cs" />
     <Compile Include="RoetContextInputExtensions.cs" />
     <Compile Include="Roetur.cs" />
     <Compile Include="RoeturServer.cs" />

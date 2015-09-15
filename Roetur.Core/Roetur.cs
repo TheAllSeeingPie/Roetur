@@ -15,17 +15,17 @@ namespace Roetur.Core
             Method = method;
         }
 
-        public Regex Regex { get; set; }
-        public string Method { get; private set; }
+        public Regex Regex { get; }
+        public string Method { get; }
 }
 
     public static class Roetur
     {
-        internal static IEnumerable<Tuple<RoetingRule, Func<RoetContext, Task>>> Routes = new List<Tuple<RoetingRule, Func<RoetContext, Task>>>();
+        internal static IEnumerable<Tuple<RoetingRule, Func<RoeturContext, Task>>> Routes = new List<Tuple<RoetingRule, Func<RoeturContext, Task>>>();
         internal static readonly Regex RouteValidator = new Regex(@"^/$|(/:?[\w-]+)", RegexOptions.Compiled);
         internal static readonly Regex Tokeniser = new Regex(@"(:[\w]+)", RegexOptions.Compiled); 
 
-        public static void Add(string route, Func<RoetContext, Task> action, string verb = "GET")
+        public static void Add(string route, Func<RoeturContext, Task> action, string verb = "GET")
         {
             if (!RouteValidator.IsMatch(route))
             {
@@ -54,9 +54,9 @@ namespace Roetur.Core
                 regex = new Regex(route, RegexOptions.Compiled);
             }
 
-            Routes = new List<Tuple<RoetingRule, Func<RoetContext, Task>>>(Routes)
+            Routes = new List<Tuple<RoetingRule, Func<RoeturContext, Task>>>(Routes)
             {
-                new Tuple<RoetingRule, Func<RoetContext, Task>>(new RoetingRule(regex, verb), action)
+                new Tuple<RoetingRule, Func<RoeturContext, Task>>(new RoetingRule(regex, verb), action)
             }.OrderByDescending(t=> t.Item1.Regex.ToString()).ToArray();
         }
 
@@ -67,7 +67,7 @@ namespace Roetur.Core
 
             if (match == null ) return context.Error500("No route found");
 
-            var roetContext = new RoetContext(context, match.Item1.Regex);
+            var roetContext = new RoeturContext(context, match.Item1.Regex);
             return match.Item2.Invoke(roetContext);
         }
     }

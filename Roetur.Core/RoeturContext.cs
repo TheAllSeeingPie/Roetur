@@ -5,13 +5,13 @@ using Microsoft.Owin;
 
 namespace Roetur.Core
 {
-    public class RoetContext
+    public class RoeturContext
     {
         internal IOwinContext OwinContext { get; private set; }
         internal IReadOnlyDictionary<string, string> Params { get; private set; }
         internal string Method { get; set; }
 
-        public RoetContext(IOwinContext owinContext, Regex regex)
+        public RoeturContext(IOwinContext owinContext, Regex regex)
         {
             OwinContext = owinContext;
             var groupNames = regex.GetGroupNames();
