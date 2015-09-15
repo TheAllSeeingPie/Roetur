@@ -27,7 +27,9 @@ protected override async Task RunAsync(CancellationToken cancellationToken)
 
 Every request to the OwinServer is passed through the Roetur. This will attempt to match the Uri's AbsolutePath along with the HTTP Verb of the request and if a match is found it will be processed using the relevant function provided. Using the Ok<T> extension method the response is attempted to be serialised into JSON and returned as an 200 OK and if this fails a 500 Internal Server error will be thrown and the exception serialised out. You can also use the Ok extension method to just return a 200 OK without a body.
 
-Uri parameters can be specified and they can be retreived using the Param<T> extension method. Simply use the same name you specified for the param in the route to retreive it. These are also converted to whatever you specify so that you don't need to pass everything around as a string.
+Uri parameters can be specified and they can be retreived using the Param<T> extension method in your context lambda. Simply use the same name you specified for the param in the route to retreive it. These are also converted to whatever you specify so that you don't need to pass everything around as a string.
+
+The request message body can be extracted using the Payload<T> extension method in your context lambda. This provides a simple way of deserialising JSON content frlm a message payload. Currently only JSON is supported in deserialisation, however other formats will be added soon.
 
 You can put anything inside of the lambda for the route, but ideally you want to at least write something out the to RoetContext.OwinContext.Response otherwise you'll not return anything!
 
