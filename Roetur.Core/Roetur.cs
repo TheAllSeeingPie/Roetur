@@ -67,8 +67,14 @@ namespace Roetur.Core
 
             if (match == null ) return context.Error500("No route found");
 
-            var roetContext = new RoeturContext(context, match.Item1.Regex);
-            return match.Item2.Invoke(roetContext);
+            try
+            {
+                return match.Item2.Invoke(new RoeturContext(context, match.Item1.Regex));
+            }
+            catch (Exception e)
+            {
+                return context.Error500(e.ToString());
+            }
         }
     }
 }
