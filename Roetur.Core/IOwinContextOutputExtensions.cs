@@ -1,7 +1,7 @@
 using System;
 using System.Threading.Tasks;
+using Jil;
 using Microsoft.Owin;
-using ServiceStack.Text;
 
 namespace Roetur.Core
 {
@@ -11,33 +11,28 @@ namespace Roetur.Core
         {
             return Task.Factory.StartNew(() =>
             {
-                context.Response.ContentType = "application/json";
                 context.Response.StatusCode = 200;
             });
         }
 
-        public static Task Ok<TIn>(this IOwinContext context, Func<TIn> item)
+        public static Task OkJson<TIn>(this IOwinContext context, Func<TIn> item)
         {
-            string s;
-            try
-            {
-                s = JsonSerializer.SerializeToString(item());
-            }
-            catch (Exception e)
-            {
-                return context.Error500(e.ToString());
-            }
-            return context.Write(s, 200);
+            return context.Write(JSON.Serialize(item()), 200);
+        }
+
+        public static Task Error401(this IOwinContext context, string message)
+        {
+            return context.Write(JSON.Serialize(message), 401, "text/plain");
         }
 
         public static Task Error500(this IOwinContext context, string message)
         {
-            return context.Write(JsonSerializer.SerializeToString(message), 500);
+            return context.Write(JSON.Serialize(message), 500, "text/plain");
         }
 
-        private static Task Write(this IOwinContext context, string message, int statusCode)
+        private static Task Write(this IOwinContext context, string message, int statusCode, string contentType = "application/json")
         {
-            context.Response.ContentType = "application/json";
+            context.Response.ContentType = contentType;
             context.Response.StatusCode = statusCode;
             return context.Response.WriteAsync(message);
         }

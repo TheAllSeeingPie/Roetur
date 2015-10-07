@@ -31,7 +31,7 @@ namespace Roetur.Core.Tests
         [TestMethod]
         public void Payload_can_be_deserialised_from_context()
         {
-            byte[] buffer = Encoding.ASCII.GetBytes(@"{""Name"":""Hello world!""");
+            byte[] buffer = Encoding.ASCII.GetBytes(@"{""Name"":""Hello world!""}");
             var stubIOwinRequest = new StubIOwinRequest
             {
                 BodyGet = () => new MemoryStream(buffer)
@@ -49,7 +49,7 @@ namespace Roetur.Core.Tests
         [TestMethod]
         public async Task Ok_should_return_200_Ok()
         {
-            Roetur.Add("/", c => c.Ok());
+            Roetur.Add("/", c => Task.Delay(0));
             var owinResponse = new StubIOwinResponse
             {
                 InstanceBehavior = StubBehaviors.Current,
@@ -74,7 +74,7 @@ namespace Roetur.Core.Tests
         [TestMethod]
         public async Task Ok_with_data_should_return_200_Ok()
         {
-            Roetur.Add("/", c => c.Ok(()=> "Hello world!"));
+            Roetur.Add("/", c => c.OkJson(()=> "Hello world!"));
             var owinResponse = new StubIOwinResponse
             {
                 InstanceBehavior = StubBehaviors.Current,
@@ -97,9 +97,9 @@ namespace Roetur.Core.Tests
         }
 
         [TestMethod]
-        public async Task Ok_with_exception_should_return_500_Error()
+        public async Task Ok_with_Exception_should_return_500_Error()
         {
-            Roetur.Add("/", c => c.Ok(() => {
+            Roetur.Add("/", c => c.OkJson(() => {
                 throw new Exception();
                 return "Hello world!"; //Needed for function type inference
             }));
@@ -122,6 +122,34 @@ namespace Roetur.Core.Tests
             await Roetur.Invoke(context);
 
             Assert.AreEqual(500, ((IOwinContext)context).Response.StatusCode);
+        }
+
+        [TestMethod]
+        public async Task Ok_with_UnauthorizedAccessException_should_return_401_Error()
+        {
+            Roetur.Add("/", c => c.OkJson(() => {
+                throw new UnauthorizedAccessException();
+                return "Hello world!"; //Needed for function type inference
+            }));
+            var owinResponse = new StubIOwinResponse
+            {
+                InstanceBehavior = StubBehaviors.Current,
+                WriteAsyncString = s => Task.Factory.StartNew(() => { })
+            };
+            var stubIOwinRequest = new StubIOwinRequest
+            {
+                UriGet = () => new Uri("http://localhost/"),
+                MethodGet = () => "GET"
+            };
+            var context = new StubIOwinContext
+            {
+                RequestGet = () => stubIOwinRequest,
+                ResponseGet = () => owinResponse
+            };
+
+            await Roetur.Invoke(context);
+
+            Assert.AreEqual(401, ((IOwinContext)context).Response.StatusCode);
         }
     }
 }

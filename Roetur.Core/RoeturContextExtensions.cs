@@ -1,6 +1,7 @@
 using System;
+using System.IO;
 using System.Threading.Tasks;
-using ServiceStack.Text;
+using Jil;
 
 namespace Roetur.Core
 {
@@ -11,14 +12,14 @@ namespace Roetur.Core
             return context.OwinContext.Ok();
         }
 
-        public static Task Ok<TIn>(this RoeturContext context, Func<TIn> item)
+        public static Task OkJson<TIn>(this RoeturContext context, Func<TIn> item)
         {
-            return context.OwinContext.Ok(item);
+            return context.OwinContext.OkJson(item);
         }
 
         public static TOut Payload<TOut>(this RoeturContext context)
         {
-            return JsonSerializer.DeserializeFromStream<TOut>(context.OwinContext.Request.Body);
+            return JSON.Deserialize<TOut>(new StreamReader(context.OwinContext.Request.Body).ReadToEnd());
         }
     }
 }

@@ -23,7 +23,7 @@ namespace Roetur.Core
     {
         internal static IEnumerable<Tuple<RoetingRule, Func<RoeturContext, Task>>> Routes = new List<Tuple<RoetingRule, Func<RoeturContext, Task>>>();
         internal static readonly Regex RouteValidator = new Regex(@"^/$|(/:?[\w-]+)", RegexOptions.Compiled);
-        internal static readonly Regex Tokeniser = new Regex(@"(:[\w]+)", RegexOptions.Compiled); 
+        internal static readonly Regex Tokeniser = new Regex(@"(:[\w]+)", RegexOptions.Compiled);
 
         public static void Add(string route, Func<RoeturContext, Task> action, string verb = "GET")
         {
@@ -69,7 +69,12 @@ namespace Roetur.Core
 
             try
             {
-                return match.Item2.Invoke(new RoeturContext(context, match.Item1.Regex));
+                return match.Item2.Invoke(new RoeturContext(context, match.Item1.Regex))
+                    .ContinueWith(t => context.Ok());
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return context.Error401("401 Not Authorised");
             }
             catch (Exception e)
             {
