@@ -78,7 +78,12 @@ namespace Roetur.Core
             }
             catch (Exception e)
             {
-                return context.Error500(e.ToString());
+                var message = string.Empty;
+                
+                #if DEBUG
+                message = e.ToString();
+                #endif
+                return context.Error500(message);
             }
         }
     }

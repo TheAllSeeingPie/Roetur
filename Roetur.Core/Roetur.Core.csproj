@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Roetur.Core</RootNamespace>
     <AssemblyName>Roetur.Core</AssemblyName>
-    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
   </PropertyGroup>
@@ -62,7 +62,7 @@
     <Compile Include="RouterContext.cs" />
     <Compile Include="RouterContextInputExtensions.cs" />
     <Compile Include="Router.cs" />
-    <Compile Include="RouterServer.cs" />
+    <Compile Include="RoeturServer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RouterContextExtensions.cs" />
   </ItemGroup>

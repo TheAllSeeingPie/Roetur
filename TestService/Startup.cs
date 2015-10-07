@@ -7,7 +7,7 @@ namespace TestService
     {
         public void Configuration(IAppBuilder appBuilder)
         {
-            appBuilder.Use<RouterServer>();
+            appBuilder.Use<RoeturServer>();
         }
     }
 }
