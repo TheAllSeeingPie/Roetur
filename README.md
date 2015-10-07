@@ -9,9 +9,9 @@ PM> Install-Package Roetur
 ```C#
 protected override async Task RunAsync(CancellationToken cancellationToken)
 {
-    Roetur.Core.Roetur.Add("/", context => context.Ok(() => HelloWorld.SayHello()));
-    Roetur.Core.Roetur.Add("/exception", context => { throw new Exception(); });
-    Roetur.Core.Roetur.Add("/:id", context => context.Ok(()=> context.Param<int>(":id")));
+    Router.Add("/", context => context.Ok(() => HelloWorld.SayHello()));
+    Router.Add("/exception", context => { throw new Exception(); });
+    Router.Add("/:id", context => context.Ok(()=> context.Param<int>(":id")));
 
     int iterations = 0;
     using (WebApp.Start<Startup>("http://localhost:8002"))
@@ -31,7 +31,7 @@ Uri parameters can be specified and they can be retreived using the Param<T> ext
 
 The request message body can be extracted using the Payload<T> extension method in your context lambda. This provides a simple way of deserialising JSON content frlm a message payload. Currently only JSON is supported in deserialisation, however other formats will be added soon.
 
-You can put anything inside of the lambda for the route, but ideally you want to at least write something out the to RoetContext.OwinContext.Response otherwise you'll not return anything!
+You can put anything inside of the lambda for the route, but ideally you want to at least write something out the to RouterContext.OwinContext.Response otherwise you'll not return anything!
 
 ## You've spelt Router wrong!
 

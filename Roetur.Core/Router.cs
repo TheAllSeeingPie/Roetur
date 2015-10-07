@@ -7,9 +7,9 @@ using Microsoft.Owin;
 
 namespace Roetur.Core
 {
-    internal class RoetingRule
+    internal class RoutingRule
 {
-        public RoetingRule(Regex regex, string method)
+        public RoutingRule(Regex regex, string method)
         {
             Regex = regex;
             Method = method;
@@ -19,13 +19,13 @@ namespace Roetur.Core
         public string Method { get; }
 }
 
-    public static class Roetur
+    public static class Router
     {
-        internal static IEnumerable<Tuple<RoetingRule, Func<RoeturContext, Task>>> Routes = new List<Tuple<RoetingRule, Func<RoeturContext, Task>>>();
+        internal static IEnumerable<Tuple<RoutingRule, Func<RouterContext, Task>>> Routes = new List<Tuple<RoutingRule, Func<RouterContext, Task>>>();
         internal static readonly Regex RouteValidator = new Regex(@"^/$|(/:?[\w-]+)", RegexOptions.Compiled);
         internal static readonly Regex Tokeniser = new Regex(@"(:[\w]+)", RegexOptions.Compiled);
 
-        public static void Add(string route, Func<RoeturContext, Task> action, string verb = "GET")
+        public static void Add(string route, Func<RouterContext, Task> action, string verb = "GET")
         {
             if (!RouteValidator.IsMatch(route))
             {
@@ -54,9 +54,9 @@ namespace Roetur.Core
                 regex = new Regex(route, RegexOptions.Compiled);
             }
 
-            Routes = new List<Tuple<RoetingRule, Func<RoeturContext, Task>>>(Routes)
+            Routes = new List<Tuple<RoutingRule, Func<RouterContext, Task>>>(Routes)
             {
-                new Tuple<RoetingRule, Func<RoeturContext, Task>>(new RoetingRule(regex, verb), action)
+                new Tuple<RoutingRule, Func<RouterContext, Task>>(new RoutingRule(regex, verb), action)
             }.OrderByDescending(t=> t.Item1.Regex.ToString()).ToArray();
         }
 
@@ -69,7 +69,7 @@ namespace Roetur.Core
 
             try
             {
-                return match.Item2.Invoke(new RoeturContext(context, match.Item1.Regex))
+                return match.Item2.Invoke(new RouterContext(context, match.Item1.Regex))
                     .ContinueWith(t => context.Ok());
             }
             catch (UnauthorizedAccessException)

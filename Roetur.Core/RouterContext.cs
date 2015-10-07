@@ -5,13 +5,13 @@ using Microsoft.Owin;
 
 namespace Roetur.Core
 {
-    public class RoeturContext
+    public class RouterContext
     {
         internal IOwinContext OwinContext { get; private set; }
         internal IReadOnlyDictionary<string, string> Params { get; private set; }
         internal string Method { get; set; }
 
-        public RoeturContext(IOwinContext owinContext, Regex regex)
+        public RouterContext(IOwinContext owinContext, Regex regex)
         {
             OwinContext = owinContext;
             var groupNames = regex.GetGroupNames();

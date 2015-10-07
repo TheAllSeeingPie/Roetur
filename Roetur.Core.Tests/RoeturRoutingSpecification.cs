@@ -15,14 +15,14 @@ namespace Roetur.Core.Tests
         [TestInitialize]
         public void Initialise()
         {
-            Roetur.Routes = new List<Tuple<RoetingRule, Func<RoeturContext, Task>>>();
+            Router.Routes = new List<Tuple<RoutingRule, Func<RouterContext, Task>>>();
         }
 
         [TestMethod]
         public async Task Simple_routes_are_routed()
         {
             var success = false;
-            Roetur.Add("/", c => Task.Factory.StartNew(() => { success = true; }));
+            Router.Add("/", c => Task.Factory.StartNew(() => { success = true; }));
             var stubIOwinRequest = new StubIOwinRequest
             {
                 UriGet = () => new Uri("http://localhost/"),
@@ -33,7 +33,7 @@ namespace Roetur.Core.Tests
                 RequestGet = () => stubIOwinRequest
             };
 
-            await Roetur.Invoke(context);
+            await Router.Invoke(context);
 
             Assert.IsTrue(success);
         }
@@ -41,7 +41,7 @@ namespace Roetur.Core.Tests
         [TestMethod]
         public async Task Thrown_exceptions_are_caught()
         {
-            Roetur.Add("/", c => { throw new Exception(); });
+            Router.Add("/", c => { throw new Exception(); });
             var owinResponse = new StubIOwinResponse
             {
                 InstanceBehavior = StubBehaviors.Current,
@@ -58,7 +58,7 @@ namespace Roetur.Core.Tests
                 ResponseGet = () => owinResponse
             };
 
-            await Roetur.Invoke(context);
+            await Router.Invoke(context);
 
             Assert.AreEqual(500, ((IOwinContext) context).Response.StatusCode);
         }
@@ -67,7 +67,7 @@ namespace Roetur.Core.Tests
         public async Task Complex_routes_with_ints_are_routed()
         {
             var success = false;
-            Roetur.Add("/:id", c => Task.Factory.StartNew(() =>
+            Router.Add("/:id", c => Task.Factory.StartNew(() =>
             {
                 Assert.AreEqual(1, c.Param<int>(":id"));
                 success = true;
@@ -82,7 +82,7 @@ namespace Roetur.Core.Tests
                 RequestGet = () => stubIOwinRequest
             };
 
-            await Roetur.Invoke(context);
+            await Router.Invoke(context);
 
             Assert.IsTrue(success);
         }
@@ -92,7 +92,7 @@ namespace Roetur.Core.Tests
         {
             var guid = Guid.NewGuid();
             var success = false;
-            Roetur.Add("/:id/:someguid", c => Task.Factory.StartNew(() =>
+            Router.Add("/:id/:someguid", c => Task.Factory.StartNew(() =>
             {
                 Assert.AreEqual(1, c.Param<int>(":id"));
                 Assert.AreEqual(guid, c.Param<Guid>(":someguid"));
@@ -108,7 +108,7 @@ namespace Roetur.Core.Tests
                 RequestGet = () => stubIOwinRequest
             };
 
-            await Roetur.Invoke(context);
+            await Router.Invoke(context);
 
             Assert.IsTrue(success);
         }
@@ -117,8 +117,8 @@ namespace Roetur.Core.Tests
         public async Task Routes_are_executed_in_correct_order()
         {
             var success = false;
-            Roetur.Add("/", c=> Task.Factory.StartNew(()=> Assert.Fail()));
-            Roetur.Add("/:id", c => Task.Factory.StartNew(() =>
+            Router.Add("/", c=> Task.Factory.StartNew(()=> Assert.Fail()));
+            Router.Add("/:id", c => Task.Factory.StartNew(() =>
             {
                 Assert.AreEqual(1, c.Param<int>(":id"));
                 success = true;
@@ -133,7 +133,7 @@ namespace Roetur.Core.Tests
                 RequestGet = () => stubIOwinRequest
             };
 
-            await Roetur.Invoke(context);
+            await Router.Invoke(context);
 
             Assert.IsTrue(success);
         }
@@ -142,8 +142,8 @@ namespace Roetur.Core.Tests
         public async Task Route_verb_is_honoured()
         {
             var success = false;
-            Roetur.Add("/", c => Task.Factory.StartNew(() => Assert.Fail()));
-            Roetur.Add("/", c => Task.Factory.StartNew(() => { success = true; }), "POST");
+            Router.Add("/", c => Task.Factory.StartNew(() => Assert.Fail()));
+            Router.Add("/", c => Task.Factory.StartNew(() => { success = true; }), "POST");
             var stubIOwinRequest = new StubIOwinRequest
             {
                 UriGet = () => new Uri("http://localhost/"),
@@ -154,7 +154,7 @@ namespace Roetur.Core.Tests
                 RequestGet = () => stubIOwinRequest
             };
 
-            await Roetur.Invoke(context);
+            await Router.Invoke(context);
 
             Assert.IsTrue(success);
         }

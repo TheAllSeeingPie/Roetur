@@ -3,15 +3,15 @@ using Microsoft.Owin;
 
 namespace Roetur.Core
 {
-    public class RoeturServer : OwinMiddleware
+    public class RouterServer : OwinMiddleware
     {
-        public RoeturServer(OwinMiddleware next) : base(next)
+        public RouterServer(OwinMiddleware next) : base(next)
         {
         }
 
         public override Task Invoke(IOwinContext context)
         {
-            return Roetur.Invoke(context);
+            return Router.Invoke(context);
         }
     }
 }

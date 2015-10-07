@@ -59,12 +59,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="IOwinContextOutputExtensions.cs" />
-    <Compile Include="RoeturContext.cs" />
-    <Compile Include="RoetContextInputExtensions.cs" />
-    <Compile Include="Roetur.cs" />
-    <Compile Include="RoeturServer.cs" />
+    <Compile Include="RouterContext.cs" />
+    <Compile Include="RouterContextInputExtensions.cs" />
+    <Compile Include="Router.cs" />
+    <Compile Include="RouterServer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RoeturContextExtensions.cs" />
+    <Compile Include="RouterContextExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

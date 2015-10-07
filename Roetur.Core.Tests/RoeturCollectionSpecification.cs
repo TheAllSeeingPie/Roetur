@@ -13,21 +13,21 @@ namespace Roetur.Core.Tests
         [TestInitialize]
         public void Initialise()
         {
-            Roetur.Routes = new List<Tuple<RoetingRule, Func<RoeturContext, Task>>>();
+            Router.Routes = new List<Tuple<RoutingRule, Func<RouterContext, Task>>>();
         }
 
         [TestMethod]
         public void Simple_routes_are_added_to_collection()
         {
-            Roetur.Add("/", context => Task.Factory.StartNew(()=> {}));
-            Assert.AreEqual(1, Roetur.Routes.Count());
+            Router.Add("/", context => Task.Factory.StartNew(()=> {}));
+            Assert.AreEqual(1, Router.Routes.Count());
         }
 
         [TestMethod]
         public void Complex_routes_are_added_to_collection()
         {
-            Roetur.Add("/awdawdad/:id", context => Task.Factory.StartNew(id => { }, context.Param<int>(":id")));
-            Assert.AreEqual(1, Roetur.Routes.Count());
+            Router.Add("/awdawdad/:id", context => Task.Factory.StartNew(id => { }, context.Param<int>(":id")));
+            Assert.AreEqual(1, Router.Routes.Count());
         }
     }
 }
