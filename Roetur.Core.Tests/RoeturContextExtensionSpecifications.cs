@@ -5,9 +5,8 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.Owin;
-using Microsoft.Owin.Fakes;
-using Microsoft.QualityTools.Testing.Fakes.Stubs;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Moq;
 
 namespace Roetur.Core.Tests
 {
@@ -32,15 +31,14 @@ namespace Roetur.Core.Tests
         public void Payload_can_be_deserialised_from_context()
         {
             byte[] buffer = Encoding.ASCII.GetBytes(@"{""Name"":""Hello world!""}");
-            var stubIOwinRequest = new StubIOwinRequest
-            {
-                BodyGet = () => new MemoryStream(buffer)
-            };
-            var context = new StubIOwinContext
-            {
-                RequestGet = () => stubIOwinRequest
-            };
-            var roeturContext = new RouterContext(context, new Regex("/"));
+
+            var request = new Mock<IOwinRequest>();
+            request.Setup(r => r.Body).Returns(new MemoryStream(buffer));
+
+            var context = new Mock<IOwinContext>();
+            context.Setup(c => c.Request).Returns(request.Object);
+
+            var roeturContext = new RouterContext(context.Object, new Regex("/"));
             var testClass = roeturContext.Payload<Testclass>();
 
             Assert.AreEqual("Hello world!", testClass.Name);
@@ -50,15 +48,14 @@ namespace Roetur.Core.Tests
         public void Dynamic_Payload_can_be_deserialised_from_context()
         {
             byte[] buffer = Encoding.ASCII.GetBytes(@"{""Name"":""Hello world!""}");
-            var stubIOwinRequest = new StubIOwinRequest
-            {
-                BodyGet = () => new MemoryStream(buffer)
-            };
-            var context = new StubIOwinContext
-            {
-                RequestGet = () => stubIOwinRequest
-            };
-            var roeturContext = new RouterContext(context, new Regex("/"));
+
+            var request = new Mock<IOwinRequest>();
+            request.Setup(r => r.Body).Returns(new MemoryStream(buffer));
+
+            var context = new Mock<IOwinContext>();
+            context.Setup(c => c.Request).Returns(request.Object);
+
+            var roeturContext = new RouterContext(context.Object, new Regex("/"));
             var testClass = roeturContext.Payload();
 
             Assert.AreEqual("Hello world!", (string)testClass.Name);
@@ -68,50 +65,44 @@ namespace Roetur.Core.Tests
         public async Task Ok_should_return_200_Ok()
         {
             Router.Add("/", c => Task.Delay(0));
-            var owinResponse = new StubIOwinResponse
-            {
-                InstanceBehavior = StubBehaviors.Current,
-                WriteAsyncString = s => Task.Factory.StartNew(() => { })
-            };
-            var stubIOwinRequest = new StubIOwinRequest
-            {
-                UriGet = () => new Uri("http://localhost/"),
-                MethodGet = () => "GET"
-            };
-            var context = new StubIOwinContext
-            {
-                RequestGet = () => stubIOwinRequest,
-                ResponseGet = () => owinResponse
-            };
 
-            await Router.Invoke(context);
+            var response = new Mock<IOwinResponse>();
+            response.Setup(r => r.WriteAsync(It.IsAny<string>())).Returns(Task.Factory.StartNew(() => { }));
+            response.SetupProperty(r => r.StatusCode);
 
-            Assert.AreEqual(200, ((IOwinContext)context).Response.StatusCode);
+            var request = new Mock<IOwinRequest>();
+            request.Setup(r => r.Uri).Returns(new Uri("http://localhost/"));
+            request.Setup(r => r.Method).Returns("GET");
+
+            var context = new Mock<IOwinContext>();
+            context.Setup(c => c.Request).Returns(request.Object);
+            context.Setup(c => c.Response).Returns(response.Object);
+
+            await Router.Invoke(context.Object).ConfigureAwait(false);
+            await Task.Delay(10);
+            Assert.AreEqual(200, context.Object.Response.StatusCode);
         }
 
         [TestMethod]
         public async Task Ok_with_data_should_return_200_Ok()
         {
             Router.Add("/", c => c.OkJson(()=> "Hello world!"));
-            var owinResponse = new StubIOwinResponse
-            {
-                InstanceBehavior = StubBehaviors.Current,
-                WriteAsyncString = s => Task.Factory.StartNew(() => { })
-            };
-            var stubIOwinRequest = new StubIOwinRequest
-            {
-                UriGet = () => new Uri("http://localhost/"),
-                MethodGet = () => "GET"
-            };
-            var context = new StubIOwinContext
-            {
-                RequestGet = () => stubIOwinRequest,
-                ResponseGet = () => owinResponse
-            };
 
-            await Router.Invoke(context);
+            var response = new Mock<IOwinResponse>();
+            response.Setup(r => r.WriteAsync(It.IsAny<string>())).Returns(Task.Factory.StartNew(() => { }));
+            response.SetupProperty(r => r.StatusCode);
 
-            Assert.AreEqual(200, ((IOwinContext)context).Response.StatusCode);
+            var request = new Mock<IOwinRequest>();
+            request.Setup(r => r.Uri).Returns(new Uri("http://localhost/"));
+            request.Setup(r => r.Method).Returns("GET");
+
+            var context = new Mock<IOwinContext>();
+            context.Setup(c => c.Request).Returns(request.Object);
+            context.Setup(c => c.Response).Returns(response.Object);
+
+            await Router.Invoke(context.Object).ConfigureAwait(false);
+
+            Assert.AreEqual(200, context.Object.Response.StatusCode);
         }
 
         [TestMethod]
@@ -121,25 +112,21 @@ namespace Roetur.Core.Tests
                 throw new Exception();
                 return "Hello world!"; //Needed for function type inference
             }));
-            var owinResponse = new StubIOwinResponse
-            {
-                InstanceBehavior = StubBehaviors.Current,
-                WriteAsyncString = s => Task.Factory.StartNew(() => { })
-            };
-            var stubIOwinRequest = new StubIOwinRequest
-            {
-                UriGet = () => new Uri("http://localhost/"),
-                MethodGet = () => "GET"
-            };
-            var context = new StubIOwinContext
-            {
-                RequestGet = () => stubIOwinRequest,
-                ResponseGet = () => owinResponse
-            };
+            var response = new Mock<IOwinResponse>();
+            response.Setup(r => r.WriteAsync(It.IsAny<string>())).Returns(Task.Factory.StartNew(() => { }));
+            response.SetupProperty(r => r.StatusCode);
 
-            await Router.Invoke(context);
+            var request = new Mock<IOwinRequest>();
+            request.Setup(r => r.Uri).Returns(new Uri("http://localhost/"));
+            request.Setup(r => r.Method).Returns("GET");
 
-            Assert.AreEqual(500, ((IOwinContext)context).Response.StatusCode);
+            var context = new Mock<IOwinContext>();
+            context.Setup(c => c.Request).Returns(request.Object);
+            context.Setup(c => c.Response).Returns(response.Object);
+
+            await Router.Invoke(context.Object).ConfigureAwait(false);
+
+            Assert.AreEqual(500, context.Object.Response.StatusCode);
         }
 
         [TestMethod]
@@ -149,25 +136,22 @@ namespace Roetur.Core.Tests
                 throw new UnauthorizedAccessException();
                 return "Hello world!"; //Needed for function type inference
             }));
-            var owinResponse = new StubIOwinResponse
-            {
-                InstanceBehavior = StubBehaviors.Current,
-                WriteAsyncString = s => Task.Factory.StartNew(() => { })
-            };
-            var stubIOwinRequest = new StubIOwinRequest
-            {
-                UriGet = () => new Uri("http://localhost/"),
-                MethodGet = () => "GET"
-            };
-            var context = new StubIOwinContext
-            {
-                RequestGet = () => stubIOwinRequest,
-                ResponseGet = () => owinResponse
-            };
+            var response = new Mock<IOwinResponse>();
+            response.Setup(r => r.WriteAsync(It.IsAny<string>())).Returns(Task.Factory.StartNew(() => { }));
+            response.SetupProperty(r=> r.StatusCode);
 
-            await Router.Invoke(context);
+            var request = new Mock<IOwinRequest>();
+            request.Setup(r => r.Uri).Returns(new Uri("http://localhost/"));
+            request.Setup(r => r.Method).Returns("GET");
 
-            Assert.AreEqual(401, ((IOwinContext)context).Response.StatusCode);
+            var context = new Mock<IOwinContext>();
+            context.Setup(c => c.Request).Returns(request.Object);
+            context.Setup(c => c.Response).Returns(response.Object);
+            
+
+            await Router.Invoke(context.Object).ConfigureAwait(false);
+
+            Assert.AreEqual(401, context.Object.Response.StatusCode);
         }
     }
 }

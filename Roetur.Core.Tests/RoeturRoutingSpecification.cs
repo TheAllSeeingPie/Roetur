@@ -1,11 +1,9 @@
 using System;
 using System.Collections.Generic;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.Owin;
-using Microsoft.Owin.Fakes;
-using Microsoft.QualityTools.Testing.Fakes.Stubs;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Moq;
 
 namespace Roetur.Core.Tests
 {
@@ -23,17 +21,14 @@ namespace Roetur.Core.Tests
         {
             var success = false;
             Router.Add("/", c => Task.Factory.StartNew(() => { success = true; }));
-            var stubIOwinRequest = new StubIOwinRequest
-            {
-                UriGet = () => new Uri("http://localhost/"),
-                MethodGet = () => "GET"
-            };
-            var context = new StubIOwinContext
-            {
-                RequestGet = () => stubIOwinRequest
-            };
+            var request = new Mock<IOwinRequest>();
+            request.Setup(r => r.Uri).Returns(new Uri("http://localhost/"));
+            request.Setup(r => r.Method).Returns("GET");
 
-            await Router.Invoke(context);
+            var context = new Mock<IOwinContext>();
+            context.Setup(c => c.Request).Returns(request.Object);
+            
+            await Router.Invoke(context.Object).ConfigureAwait(false);
 
             Assert.IsTrue(success);
         }
@@ -42,25 +37,21 @@ namespace Roetur.Core.Tests
         public async Task Thrown_exceptions_are_caught()
         {
             Router.Add("/", c => { throw new Exception(); });
-            var owinResponse = new StubIOwinResponse
-            {
-                InstanceBehavior = StubBehaviors.Current,
-                WriteAsyncString = s => Task.Factory.StartNew(()=> {})
-            };
-            var stubIOwinRequest = new StubIOwinRequest
-            {
-                UriGet = () => new Uri("http://localhost/"),
-                MethodGet = () => "GET"
-            };
-            var context = new StubIOwinContext
-            {
-                RequestGet = () => stubIOwinRequest,
-                ResponseGet = () => owinResponse
-            };
+            var response = new Mock<IOwinResponse>();
+            response.Setup(r => r.WriteAsync(It.IsAny<string>())).Returns(Task.Factory.StartNew(() => { }));
+            response.SetupProperty(r => r.StatusCode);
 
-            await Router.Invoke(context);
+            var request = new Mock<IOwinRequest>();
+            request.Setup(r => r.Uri).Returns(new Uri("http://localhost/"));
+            request.Setup(r => r.Method).Returns("GET");
 
-            Assert.AreEqual(500, ((IOwinContext) context).Response.StatusCode);
+            var context = new Mock<IOwinContext>();
+            context.Setup(c => c.Request).Returns(request.Object);
+            context.Setup(c => c.Response).Returns(response.Object);
+
+            await Router.Invoke(context.Object).ConfigureAwait(false);
+
+            Assert.AreEqual(500, context.Object.Response.StatusCode);
         }
 
         [TestMethod]
@@ -72,17 +63,14 @@ namespace Roetur.Core.Tests
                 Assert.AreEqual(1, c.Param<int>(":id"));
                 success = true;
             }));
-            var stubIOwinRequest = new StubIOwinRequest
-            {
-                UriGet = () => new Uri("http://localhost/1"),
-                MethodGet = () => "GET"
-            };
-            var context = new StubIOwinContext
-            {
-                RequestGet = () => stubIOwinRequest
-            };
+            var request = new Mock<IOwinRequest>();
+            request.Setup(r => r.Uri).Returns(new Uri("http://localhost/1"));
+            request.Setup(r => r.Method).Returns("GET");
 
-            await Router.Invoke(context);
+            var context = new Mock<IOwinContext>();
+            context.Setup(c => c.Request).Returns(request.Object);
+
+            await Router.Invoke(context.Object).ConfigureAwait(false);
 
             Assert.IsTrue(success);
         }
@@ -90,7 +78,7 @@ namespace Roetur.Core.Tests
         [TestMethod]
         public async Task Complex_routes_with_ints_and_guids_are_routed()
         {
-            var guid = Guid.NewGuid();
+            var guid = Guid.Empty;
             var success = false;
             Router.Add("/:id/:someguid", c => Task.Factory.StartNew(() =>
             {
@@ -98,17 +86,14 @@ namespace Roetur.Core.Tests
                 Assert.AreEqual(guid, c.Param<Guid>(":someguid"));
                 success = true;
             }));
-            var stubIOwinRequest = new StubIOwinRequest
-            {
-                UriGet = () => new Uri($"http://localhost/1/{guid}"),
-                MethodGet = () => "GET"
-            };
-            var context = new StubIOwinContext
-            {
-                RequestGet = () => stubIOwinRequest
-            };
+            var request = new Mock<IOwinRequest>();
+            request.Setup(r => r.Uri).Returns(new Uri("http://localhost/1/{00000000-0000-0000-0000-000000000000}"));
+            request.Setup(r => r.Method).Returns("GET");
 
-            await Router.Invoke(context);
+            var context = new Mock<IOwinContext>();
+            context.Setup(c => c.Request).Returns(request.Object);
+
+            await Router.Invoke(context.Object).ConfigureAwait(false);
 
             Assert.IsTrue(success);
         }
@@ -123,17 +108,14 @@ namespace Roetur.Core.Tests
                 Assert.AreEqual(1, c.Param<int>(":id"));
                 success = true;
             }));
-            var stubIOwinRequest = new StubIOwinRequest
-            {
-                UriGet = () => new Uri("http://localhost/1"),
-                MethodGet = () => "GET"
-            };
-            var context = new StubIOwinContext
-            {
-                RequestGet = () => stubIOwinRequest
-            };
+            var request = new Mock<IOwinRequest>();
+            request.Setup(r => r.Uri).Returns(new Uri("http://localhost/1"));
+            request.Setup(r => r.Method).Returns("GET");
 
-            await Router.Invoke(context);
+            var context = new Mock<IOwinContext>();
+            context.Setup(c => c.Request).Returns(request.Object);
+
+            await Router.Invoke(context.Object).ConfigureAwait(false);
 
             Assert.IsTrue(success);
         }
@@ -144,17 +126,14 @@ namespace Roetur.Core.Tests
             var success = false;
             Router.Add("/", c => Task.Factory.StartNew(() => Assert.Fail()));
             Router.Add("/", c => Task.Factory.StartNew(() => { success = true; }), "POST");
-            var stubIOwinRequest = new StubIOwinRequest
-            {
-                UriGet = () => new Uri("http://localhost/"),
-                MethodGet = () => "POST"
-            };
-            var context = new StubIOwinContext
-            {
-                RequestGet = () => stubIOwinRequest
-            };
+            var request = new Mock<IOwinRequest>();
+            request.Setup(r => r.Uri).Returns(new Uri("http://localhost/"));
+            request.Setup(r => r.Method).Returns("POST");
 
-            await Router.Invoke(context);
+            var context = new Mock<IOwinContext>();
+            context.Setup(c => c.Request).Returns(request.Object);
+
+            await Router.Invoke(context.Object).ConfigureAwait(false);
 
             Assert.IsTrue(success);
         }
